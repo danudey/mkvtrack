@@ -3,8 +3,8 @@ name = "mkvtrack"
 version = "0.1.0"
 edition = "2024"
 description = "Terminal interface for inspecting and editing Matroska audio and subtitle track flags"
-license = "MIT"
-repository = ""
+license = "Apache 2.0"
+repository = "https://github.com/danudey/mkvtrack"
 
 [dependencies]
 crossterm = "0.29"

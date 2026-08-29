@@ -181,3 +181,51 @@ MKVTRACK_TEST_MKV=/path/to/file.mkv cargo test a_real_file -- --nocapture
 
 It copies the file to a temporary directory first and prints where the result
 was left, so it can be checked with `mkvinfo`, `ffprobe` or a player.
+
+## Releases
+
+Releases are made by [release-please]. Write commit messages in the
+[conventional commits] form:
+
+```
+feat: add a keybinding to clear the forced flag
+fix: keep the CRC-32 when a cue is widened
+feat!: drop the --list flag
+```
+
+`feat` bumps the minor version, `fix` the patch version, and a `!` or a
+`BREAKING CHANGE:` footer the major one. `docs`, `test`, `chore` and `ci`
+commits do not cause a release on their own.
+
+On every push to `main` the `release` workflow keeps a release pull request
+open with the next version number and the changelog entries earned so far.
+Merging that pull request bumps `Cargo.toml` and `Cargo.lock`, updates
+`CHANGELOG.md`, tags the commit `vX.Y.Z`, and creates the GitHub release. The
+same workflow then builds the binaries and attaches them to it:
+
+| Asset | Target |
+| --- | --- |
+| `mkvtrack-<version>-macos-universal.tar.gz` | `aarch64` and `x86_64` macOS in one binary |
+| `mkvtrack-<version>-x86_64-pc-windows-msvc.zip` | Windows on x86-64 |
+| `mkvtrack-<version>-aarch64-pc-windows-msvc.zip` | Windows on ARM64 |
+| `mkvtrack-<version>-x86_64-unknown-linux-musl.tar.gz` | Linux on x86-64, static |
+| `mkvtrack-<version>-aarch64-unknown-linux-musl.tar.gz` | Linux on ARM64, static |
+| `mkvtrack-<version>-riscv64gc-unknown-linux-musl.tar.gz` | Linux on RISC-V 64, static |
+
+Each asset has a `.sha256` file beside it.
+
+The Linux binaries link against musl statically, so they run on any
+distribution. Nothing in the crate or its dependencies is written in C, so
+`rust-lld` links all three architectures from the same runner; there is no
+cross compiler or container in the build.
+
+To reproduce a Linux build locally:
+
+```
+rustup target add x86_64-unknown-linux-musl
+RUSTFLAGS="-C linker=rust-lld -C target-feature=+crt-static" \
+  cargo build --release --target x86_64-unknown-linux-musl
+```
+
+[release-please]: https://github.com/googleapis/release-please
+[conventional commits]: https://www.conventionalcommits.org/
