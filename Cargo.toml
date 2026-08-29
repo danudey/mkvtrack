@@ -1,0 +1,16 @@
+[package]
+name = "mkvtrack"
+version = "0.1.0"
+edition = "2024"
+description = "Terminal interface for inspecting and editing Matroska audio and subtitle track flags"
+license = "MIT"
+repository = ""
+
+[dependencies]
+crossterm = "0.29"
+ratatui = "0.29"
+
+[profile.release]
+lto = true
+codegen-units = 1
+strip = true
