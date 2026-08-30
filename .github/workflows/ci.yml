@@ -27,7 +27,12 @@ jobs:
       - run: cargo fmt --all --check
 
   clippy:
+    name: Run clippy analysis
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
     steps:
       - uses: actions/checkout@v7
       - uses: dtolnay/rust-toolchain@stable
