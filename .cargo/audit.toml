@@ -1,0 +1,3 @@
+# Advisories that are known, transitive, and not fixable from this crate.
+# Each one arrives through ratatui 0.29; drop the entry once a ratatui release
+# moves off the dependency, so that `cargo audit` starts failing on it again.

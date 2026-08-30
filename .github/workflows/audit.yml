@@ -1,0 +1,32 @@
+name: audit
+
+# Advisories appear without anything in this repository changing, so this runs
+# on a schedule as well as on pull requests. GitHub emails the repository owner
+# when a scheduled workflow fails on the default branch.
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    # Monday mornings, off the top of the hour, which GitHub asks for.
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: taiki-e/install-action@cargo-audit
+      # Fails on anything new, including unmaintained and unsound notices. The
+      # advisories already known to be unfixable here are listed in
+      # .cargo/audit.toml.
+      - run: cargo audit --deny warnings

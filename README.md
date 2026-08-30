@@ -28,6 +28,9 @@ cargo build --release
 
 The binary is `target/release/mkvtrack`.
 
+Rust 1.88 or later is needed. The floor comes from the proc-macro crates
+`ratatui` depends on, not from the 2024 edition, which asks only for 1.85.
+
 ### A portable static binary
 
 ```
@@ -219,13 +222,11 @@ distribution. Nothing in the crate or its dependencies is written in C, so
 `rust-lld` links all three architectures from the same runner; there is no
 cross compiler or container in the build.
 
-To reproduce a Linux build locally:
-
-```
-rustup target add x86_64-unknown-linux-musl
-RUSTFLAGS="-C linker=rust-lld -C target-feature=+crt-static" \
-  cargo build --release --target x86_64-unknown-linux-musl
-```
+To reproduce a release build locally, add the target as in
+[A portable static binary](#a-portable-static-binary) above. The workflow also
+passes `RUSTFLAGS="-C linker=rust-lld -C target-feature=+crt-static"`, which
+the `aarch64` and `riscv64gc` targets need: unlike `x86_64`, they do not link
+statically by default and `rust-lld` is not their default linker.
 
 [release-please]: https://github.com/googleapis/release-please
 [conventional commits]: https://www.conventionalcommits.org/
